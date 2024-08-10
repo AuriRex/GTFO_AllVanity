@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+
+		<AssemblyName>AllVanity</AssemblyName>
+		<RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("GTFO_", ""))</RootNamespace>
+
+		<LatestGeneratedGameAssembliesPath>$(ProjectDir)..\lib\BepInEx\interop\</LatestGeneratedGameAssembliesPath>
+		<LoaderRootPath>$(ProjectDir)..\lib\BepInEx\core\</LoaderRootPath>
+
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+
+		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Reference Include="0Harmony">
+			<HintPath>$(LoaderRootPath)0Harmony.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Clonesoft.Json">
+			<HintPath>$(ProjectDir)..\lib\Clonesoft.Json.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="BepInEx.Core">
+			<HintPath>$(LoaderRootPath)BepInEx.Core.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="BepInEx.Unity.IL2CPP">
+			<HintPath>$(LoaderRootPath)BepInEx.Unity.IL2CPP.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Il2CppInterop.Common">
+			<HintPath>$(LoaderRootPath)Il2CppInterop.Common.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Il2CppInterop.Runtime">
+			<HintPath>$(LoaderRootPath)Il2CppInterop.Runtime.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)UnityEngine.CoreModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)UnityEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Il2Cppmscorlib">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)Il2Cppmscorlib.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Modules-ASM">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)Modules-ASM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="GlobalFramework-ASM">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)GlobalFramework-ASM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Plugins-ASM">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)Plugins-ASM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.ImageConversionModule">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)UnityEngine.ImageConversionModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+
+		<Reference Include="Utils-ASM">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)Utils-ASM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+
+		<Reference Include="DropServerSDK-ASM">
+			<HintPath>$(LatestGeneratedGameAssembliesPath)DropServerSDK-ASM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+</Project>
