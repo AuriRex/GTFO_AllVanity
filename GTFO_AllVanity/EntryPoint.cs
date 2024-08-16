@@ -19,7 +19,7 @@ namespace AllVanity
     {
         public const string GUID = "dev.aurirex.gtfo.allvanity";
         public const string NAME = "All Vanity";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.1.0";
 
         public const string DEVIOUSLICK_GUID = "com.mccad00.AmongDrip";
         public const string NOBOOSTERS_GUID = "dev.aurirex.gtfo.noboosters";
