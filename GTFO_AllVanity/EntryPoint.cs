@@ -4,6 +4,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using System.Linq;
 using System.Reflection;
+using static AllVanity.Patches;
 
 [assembly: AssemblyVersion(AllVanity.EntryPoint.VERSION)]
 [assembly: AssemblyFileVersion(AllVanity.EntryPoint.VERSION)]
@@ -29,17 +30,25 @@ namespace AllVanity
 
         internal static bool noboostersLoaded = false;
 
+        internal static string hexColorUnlocked = "faa";
+
         public override void Load()
         {
             L = Log;
             
             noboostersLoaded = IL2CPPChainloader.Instance.Plugins.Any(kvp => kvp.Key == NOBOOSTERS_GUID);
 
-            Log.LogInfo("Applying Patches ...");
-
-            _harmonyInstance = new Harmony(GUID);
-
-            _harmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
+            if (noboostersLoaded)
+            {
+                Log.LogInfo("NoBoosters is installed, harmony patching ...");
+                _harmonyInstance = new Harmony(GUID);
+                _harmonyInstance.PatchAll(typeof(PersistentInventoryManager_CommitPendingTransactions_Patch));
+            }
+            else
+            {
+                Log.LogInfo("NoBoosters is NOT installed, native patching ...");
+                NativePatches.ApplyNative();
+            }
         }
     }
 }

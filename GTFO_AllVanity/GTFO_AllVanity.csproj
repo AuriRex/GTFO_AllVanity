@@ -12,6 +12,7 @@
 
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
 		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
@@ -24,9 +25,9 @@
 			<HintPath>$(LoaderRootPath)0Harmony.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="Clonesoft.Json">
-			<HintPath>$(ProjectDir)..\lib\Clonesoft.Json.dll</HintPath>
-			<Private>True</Private>
+		<Reference Include="MonoMod.RuntimeDetour">
+			<HintPath>$(LoaderRootPath)MonoMod.RuntimeDetour.dll</HintPath>
+			<Private>False</Private>
 		</Reference>
 		<Reference Include="BepInEx.Core">
 			<HintPath>$(LoaderRootPath)BepInEx.Core.dll</HintPath>

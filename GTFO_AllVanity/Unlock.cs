@@ -1,22 +1,11 @@
 ﻿using DropServer.VanityItems;
 using GameData;
 using Il2CppInterop.Runtime.Injection;
-using System.Collections;
-using UnityEngine;
 
 namespace AllVanity
 {
     public class Unlock
     {
-        public static IEnumerator DelayedSetupVanity()
-        {
-            EntryPoint.L.LogDebug("Delayed Setup ...");
-
-            yield return new WaitForSeconds(0.5f);
-
-            SetupVanityInventory();
-        }
-
         public static void SetupVanityInventory()
         {
             EntryPoint.L.LogWarning("Setting up Vanity Item Inventory!");
