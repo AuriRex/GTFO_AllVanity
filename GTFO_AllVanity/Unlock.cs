@@ -1,41 +1,71 @@
-﻿using DropServer.VanityItems;
-using GameData;
-using Il2CppInterop.Runtime.Injection;
+﻿using GameData;
+using System;
+using System.Collections.Generic;
 
 namespace AllVanity
 {
-    public class Unlock
+    public static class Unlock
     {
-        public static void SetupVanityInventory()
+        private static readonly HashSet<Func<VanityItemsTemplateDataBlock, UnlockState>> _lockStateFuncs = new();
+
+        public static void RegisterUnlockMethod(Func<VanityItemsTemplateDataBlock, UnlockState> func)
         {
-            EntryPoint.L.LogWarning("Setting up Vanity Item Inventory!");
-            PersistentInventoryManager.Current.m_vanityItemsInventory.UpdateItems(CreateVanityPlayerData());
+            if (func == null)
+                return;
+            _lockStateFuncs.Add(func);
         }
 
-        internal static VanityItemPlayerData CreateVanityPlayerData()
+        public static bool IsAllowedToUnlock(VanityItemsTemplateDataBlock block)
         {
-            var vanity = new VanityItemPlayerData(ClassInjector.DerivedConstructorPointer<VanityItemPlayerData>());
+            if (_lockStateFuncs.Count == 0)
+                return true;
 
-            var allBlocks = GameDataBlockBase<VanityItemsTemplateDataBlock>.GetAllBlocks();
-
-            var vanityArray = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DropServer.VanityItems.VanityItem>(allBlocks.Count);
-
-            var c = 0;
-            foreach (VanityItemsTemplateDataBlock block in allBlocks)
+            bool doUnlock = false;
+            bool doLock = false;
+            bool forceLock = false;
+            foreach(var func in _lockStateFuncs)
             {
-                DropServer.VanityItems.VanityItem item = new DropServer.VanityItems.VanityItem(ClassInjector.DerivedConstructorPointer<DropServer.VanityItems.VanityItem>())
+                try
                 {
-                    Flags = InventoryItemFlags.Touched | InventoryItemFlags.Acknowledged,
-                    ItemId = block.persistentID,
-                };
+                    var state = func.Invoke(block);
 
-                vanityArray[c] = item;
-                c++;
+                    switch (state)
+                    {
+                        default:
+                        case UnlockState.Skip:
+                            break;
+                        case UnlockState.TryUnlock:
+                            doUnlock = true;
+                            break;
+                        case UnlockState.TryLock:
+                            doLock = true;
+                            break;
+                        case UnlockState.ForceLock:
+                            forceLock = true;
+                            break;
+                        case UnlockState.ForceUnlock:
+                            return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Plugin.L.LogWarning($"A provided {nameof(IsAllowedToUnlock)} func failed!");
+                    Plugin.L.LogError($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                }
             }
 
-            vanity.Items = vanityArray;
+            if (forceLock)
+                return false;
 
-            return vanity;
+            if (doUnlock)
+                return true;
+
+            return !doLock;
+        }
+
+        public static void ReloadInventory()
+        {
+            PersistentInventoryManager.SetInventoryDirty();
         }
     }
 }

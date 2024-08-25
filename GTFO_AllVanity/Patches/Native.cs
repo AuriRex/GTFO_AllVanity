@@ -8,9 +8,9 @@ using Il2CppInterop.Runtime.Runtime;
 using System;
 using System.Collections.Generic;
 
-namespace AllVanity
+namespace AllVanity.Patches
 {
-    internal class NativePatches
+    internal class Native
     {
         public static unsafe void* GetIl2CppMethod<T>(string methodName, string returnTypeName, bool isGeneric, params string[] argTypes) where T : Il2CppObjectBase
         {
@@ -23,7 +23,7 @@ namespace AllVanity
         private static readonly List<INativeDetour> _detours = new();
         internal static unsafe void ApplyNative()
         {
-            _detours.Add(INativeDetour.CreateAndApply<UpdateItems>((nint)GetIl2CppMethod<VanityItemInventory>(nameof(VanityItemInventory.UpdateItems), "System.Void", false, nameof(VanityItemPlayerData)), UpdateItemsPatch, out _originalUpdateItems));
+            _detours.Add(INativeDetour.CreateAndApply((nint)GetIl2CppMethod<VanityItemInventory>(nameof(VanityItemInventory.UpdateItems), "System.Void", false, nameof(VanityItemPlayerData)), UpdateItemsPatch, out _originalUpdateItems));
         }
 
         private static unsafe UpdateItems _originalUpdateItems;
@@ -56,8 +56,11 @@ namespace AllVanity
                 if (backedIds.Contains(block.persistentID))
                     continue;
 
+                if (!Unlock.IsAllowedToUnlock(block))
+                    continue;
+
                 VanityItem item = new VanityItem(ClassInjector.DerivedConstructorPointer<VanityItem>());
-                item.publicName = $"<#{EntryPoint.hexColorUnlocked}>{block.publicName}</color>";
+                item.publicName = $"<#{Plugin.hexColorUnlocked}>{block.publicName}</color>";
                 item.type = block.type;
                 item.prefab = block.prefab;
                 item.flags = VanityItemFlags.Touched | VanityItemFlags.Acknowledged;
