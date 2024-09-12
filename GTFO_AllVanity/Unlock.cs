@@ -17,8 +17,16 @@ namespace AllVanity
 
         public static bool IsAllowedToUnlock(VanityItemsTemplateDataBlock block)
         {
+            if (block == null)
+                return false;
+
             if (_lockStateFuncs.Count == 0)
+            {
+                if (block.name.StartsWith("LOCK_"))
+                    return false;
+
                 return true;
+            }
 
             bool doUnlock = false;
             bool doLock = false;
@@ -59,6 +67,9 @@ namespace AllVanity
 
             if (doUnlock)
                 return true;
+
+            if (block.name.StartsWith("LOCK_"))
+                return false;
 
             return !doLock;
         }
