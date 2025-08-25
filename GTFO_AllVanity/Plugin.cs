@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
@@ -38,9 +39,17 @@ namespace AllVanity
         {
             L = Log;
             
-            noboostersLoaded = IL2CPPChainloader.Instance.Plugins.Any(kvp => kvp.Key == NOBOOSTERS_GUID);
-            simpleProgressionLoaded = IL2CPPChainloader.Instance.Plugins.Any(kvp => kvp.Key == SIMPLEPROGRESSION_GUID);
+            noboostersLoaded = IL2CPPChainloader.Instance.Plugins.Any(kvp =>
+                string.Equals(kvp.Key, NOBOOSTERS_GUID, StringComparison.InvariantCultureIgnoreCase));
+            simpleProgressionLoaded = IL2CPPChainloader.Instance.Plugins.Any(kvp =>
+                string.Equals(kvp.Key, SIMPLEPROGRESSION_GUID, StringComparison.InvariantCultureIgnoreCase));
 
+            if (simpleProgressionLoaded)
+            {
+                Log.LogInfo("Simple Progression is installed, doing nothing :)");
+                return;
+            }
+            
             _harmonyInstance = new Harmony(GUID);
 
             if (noboostersLoaded)
@@ -48,10 +57,10 @@ namespace AllVanity
                 Log.LogInfo("NoBoosters is installed, harmony patching ...");
                 _harmonyInstance.PatchAll(typeof(Patches.Managed.PersistentInventoryManager_CommitPendingTransactions_Patch));
                 
-                if (simpleProgressionLoaded)
-                {
-                    _harmonyInstance.PatchAll(typeof(Patches.Managed.PersistentInventoryManager_TouchVanityItem_Patch));
-                }
+                // if (simpleProgressionLoaded)
+                // {
+                //     _harmonyInstance.PatchAll(typeof(Patches.Managed.PersistentInventoryManager_TouchVanityItem_Patch));
+                // }
             }
             else
             {

@@ -1,4 +1,4 @@
-﻿using AllVanity.Interop;
+﻿//using AllVanity.Interop;
 using DropServer.VanityItems;
 using GameData;
 using HarmonyLib;
@@ -25,7 +25,7 @@ namespace AllVanity.Patches
             }
         }
 
-        [HarmonyPatch(typeof(PersistentInventoryManager), nameof(PersistentInventoryManager.TouchVanityItem))]
+        /*[HarmonyPatch(typeof(PersistentInventoryManager), nameof(PersistentInventoryManager.TouchVanityItem))]
         internal static class PersistentInventoryManager_TouchVanityItem_Patch
         {
             public static bool Prefix(uint vanityItemId)
@@ -35,7 +35,7 @@ namespace AllVanity.Patches
                 PersistentInventoryManager.m_dirty = true;
                 return false;
             }
-        }
+        }*/
 
         public static void SetupVanityInventory()
         {
@@ -45,8 +45,8 @@ namespace AllVanity.Patches
 
         internal static VanityItemPlayerData CreateVanityPlayerData()
         {
-            if (Plugin.simpleProgressionLoaded)
-                return SimpleProgressionInterop.GetVanityPlayerData();
+            // if (Plugin.simpleProgressionLoaded)
+            //     return SimpleProgressionInterop.GetVanityPlayerData();
 
             var allBlocks = GameDataBlockBase<VanityItemsTemplateDataBlock>.GetAllBlocks();
 

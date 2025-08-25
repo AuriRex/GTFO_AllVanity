@@ -1,4 +1,5 @@
-﻿using DropServer.VanityItems;
+﻿/*
+using DropServer.VanityItems;
 using GameData;
 using Il2CppInterop.Runtime.Injection;
 using System;
@@ -73,3 +74,4 @@ namespace AllVanity.Interop
         }
     }
 }
+*/
