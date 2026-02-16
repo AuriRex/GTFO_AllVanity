@@ -20,7 +20,7 @@ public class Plugin : BasePlugin
 {
     public const string GUID = "dev.aurirex.gtfo.allvanity";
     public const string NAME = "All Vanity";
-    public const string VERSION = "1.2.0";
+    public const string VERSION = "1.2.1";
 
     public const string DEVIOUSLICK_GUID = "com.mccad00.AmongDrip";
     public const string NOBOOSTERS_GUID = "dev.aurirex.gtfo.noboosters";
@@ -30,8 +30,8 @@ public class Plugin : BasePlugin
 
     internal static ManualLogSource L;
 
-    internal static bool noboostersLoaded = false;
-    internal static bool simpleProgressionLoaded = false;
+    internal static bool noboostersLoaded;
+    internal static bool simpleProgressionLoaded;
 
     internal static string hexColorUnlocked = "f77";
 

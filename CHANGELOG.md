@@ -1,4 +1,8 @@
 # Changelog
+## v1.2.1
+* Changed non-owned vanity item highlight color to be more vibrant
+* Added unlock allowlist file (see readme)
+
 ## v1.2.0
 * Added SimpleProgression interop
 
