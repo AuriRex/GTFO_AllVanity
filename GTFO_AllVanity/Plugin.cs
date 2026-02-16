@@ -33,7 +33,7 @@ public class Plugin : BasePlugin
     internal static bool noboostersLoaded = false;
     internal static bool simpleProgressionLoaded = false;
 
-    internal static string hexColorUnlocked = "faa";
+    internal static string hexColorUnlocked = "f77";
 
     public override void Load()
     {
@@ -52,6 +52,8 @@ public class Plugin : BasePlugin
             
         _harmonyInstance = new Harmony(GUID);
 
+        Unlock.LoadUnlockFile();
+        
         if (noboostersLoaded)
         {
             Log.LogInfo("NoBoosters is installed, harmony patching ...");

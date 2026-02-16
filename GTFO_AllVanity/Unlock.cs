@@ -1,11 +1,14 @@
 ﻿using GameData;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using BepInEx;
 
 namespace AllVanity;
 
 public static class Unlock
 {
+    private static List<uint> _allowedToUnlock = null!;
     private static readonly HashSet<Func<VanityItemsTemplateDataBlock, UnlockState>> _lockStateFuncs = new();
 
     public static void RegisterUnlockMethod(Func<VanityItemsTemplateDataBlock, UnlockState> func)
@@ -22,6 +25,11 @@ public static class Unlock
 
         if (_lockStateFuncs.Count == 0)
         {
+            if (_allowedToUnlock != null)
+            {
+                return _allowedToUnlock.Contains(block.persistentID);
+            }
+            
             if (block.name.StartsWith("LOCK_"))
                 return false;
 
@@ -77,5 +85,24 @@ public static class Unlock
     public static void ReloadInventory()
     {
         PersistentInventoryManager.SetInventoryDirty();
+    }
+
+    internal static void LoadUnlockFile()
+    {
+        try
+        {
+            var path = Path.Combine(Paths.ConfigPath, "AllVanity_UnlockList.json");
+            if (!File.Exists(path))
+                return;
+
+            var json = File.ReadAllText(path);
+            _allowedToUnlock = System.Text.Json.JsonSerializer.Deserialize<List<uint>>(json);
+        }
+        catch (Exception ex)
+        {
+            Plugin.L.LogError($"Error loading unlock file: {ex.GetType().Name}: {ex.Message}");
+            Plugin.L.LogWarning($"StackTrace:\n{ex.StackTrace}");
+            _allowedToUnlock = null;
+        }
     }
 }
