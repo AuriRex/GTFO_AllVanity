@@ -2,81 +2,80 @@
 using System;
 using System.Collections.Generic;
 
-namespace AllVanity
+namespace AllVanity;
+
+public static class Unlock
 {
-    public static class Unlock
+    private static readonly HashSet<Func<VanityItemsTemplateDataBlock, UnlockState>> _lockStateFuncs = new();
+
+    public static void RegisterUnlockMethod(Func<VanityItemsTemplateDataBlock, UnlockState> func)
     {
-        private static readonly HashSet<Func<VanityItemsTemplateDataBlock, UnlockState>> _lockStateFuncs = new();
+        if (func == null)
+            return;
+        _lockStateFuncs.Add(func);
+    }
 
-        public static void RegisterUnlockMethod(Func<VanityItemsTemplateDataBlock, UnlockState> func)
+    public static bool IsAllowedToUnlock(VanityItemsTemplateDataBlock block)
+    {
+        if (block == null)
+            return false;
+
+        if (_lockStateFuncs.Count == 0)
         {
-            if (func == null)
-                return;
-            _lockStateFuncs.Add(func);
-        }
-
-        public static bool IsAllowedToUnlock(VanityItemsTemplateDataBlock block)
-        {
-            if (block == null)
-                return false;
-
-            if (_lockStateFuncs.Count == 0)
-            {
-                if (block.name.StartsWith("LOCK_"))
-                    return false;
-
-                return true;
-            }
-
-            bool doUnlock = false;
-            bool doLock = false;
-            bool forceLock = false;
-            foreach(var func in _lockStateFuncs)
-            {
-                try
-                {
-                    var state = func.Invoke(block);
-
-                    switch (state)
-                    {
-                        default:
-                        case UnlockState.Skip:
-                            break;
-                        case UnlockState.TryUnlock:
-                            doUnlock = true;
-                            break;
-                        case UnlockState.TryLock:
-                            doLock = true;
-                            break;
-                        case UnlockState.ForceLock:
-                            forceLock = true;
-                            break;
-                        case UnlockState.ForceUnlock:
-                            return true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Plugin.L.LogWarning($"A provided {nameof(IsAllowedToUnlock)} func failed!");
-                    Plugin.L.LogError($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
-                }
-            }
-
-            if (forceLock)
-                return false;
-
-            if (doUnlock)
-                return true;
-
             if (block.name.StartsWith("LOCK_"))
                 return false;
 
-            return !doLock;
+            return true;
         }
 
-        public static void ReloadInventory()
+        bool doUnlock = false;
+        bool doLock = false;
+        bool forceLock = false;
+        foreach(var func in _lockStateFuncs)
         {
-            PersistentInventoryManager.SetInventoryDirty();
+            try
+            {
+                var state = func.Invoke(block);
+
+                switch (state)
+                {
+                    default:
+                    case UnlockState.Skip:
+                        break;
+                    case UnlockState.TryUnlock:
+                        doUnlock = true;
+                        break;
+                    case UnlockState.TryLock:
+                        doLock = true;
+                        break;
+                    case UnlockState.ForceLock:
+                        forceLock = true;
+                        break;
+                    case UnlockState.ForceUnlock:
+                        return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.L.LogWarning($"A provided {nameof(IsAllowedToUnlock)} func failed!");
+                Plugin.L.LogError($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+            }
         }
+
+        if (forceLock)
+            return false;
+
+        if (doUnlock)
+            return true;
+
+        if (block.name.StartsWith("LOCK_"))
+            return false;
+
+        return !doLock;
+    }
+
+    public static void ReloadInventory()
+    {
+        PersistentInventoryManager.SetInventoryDirty();
     }
 }
