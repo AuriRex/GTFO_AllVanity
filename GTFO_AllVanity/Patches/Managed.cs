@@ -1,5 +1,4 @@
-﻿//using AllVanity.Interop;
-using DropServer.VanityItems;
+﻿using DropServer.VanityItems;
 using GameData;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
@@ -25,18 +24,6 @@ internal static class Managed
         }
     }
 
-    /*[HarmonyPatch(typeof(PersistentInventoryManager), nameof(PersistentInventoryManager.TouchVanityItem))]
-    internal static class PersistentInventoryManager__TouchVanityItem__Patch
-    {
-        public static bool Prefix(uint vanityItemId)
-        {
-            // We combine Ack and Touch here because there is no good way to patch into anything that acknowledges without breaking stuff :,)
-            SimpleProgressionInterop.TouchAndAckIds(vanityItemId);
-            PersistentInventoryManager.m_dirty = true;
-            return false;
-        }
-    }*/
-
     public static void SetupVanityInventory()
     {
         Plugin.L.LogWarning("Setting up Vanity Item Inventory!");
@@ -45,9 +32,6 @@ internal static class Managed
 
     private static VanityItemPlayerData CreateVanityPlayerData()
     {
-        // if (Plugin.simpleProgressionLoaded)
-        //     return SimpleProgressionInterop.GetVanityPlayerData();
-
         var allBlocks = GameDataBlockBase<VanityItemsTemplateDataBlock>.GetAllBlocks();
 
         var validBlocks = new List<VanityItemsTemplateDataBlock>();

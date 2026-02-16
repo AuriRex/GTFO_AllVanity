@@ -56,11 +56,6 @@ public class Plugin : BasePlugin
         {
             Log.LogInfo("NoBoosters is installed, harmony patching ...");
             _harmonyInstance.PatchAll(typeof(Patches.Managed.PersistentInventoryManager__CommitPendingTransactions__Patch));
-                
-            // if (simpleProgressionLoaded)
-            // {
-            //     _harmonyInstance.PatchAll(typeof(Patches.Managed.PersistentInventoryManager_TouchVanityItem_Patch));
-            // }
         }
         else
         {
