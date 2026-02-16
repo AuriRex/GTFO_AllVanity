@@ -4,29 +4,29 @@ using GameData;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System.Collections.Generic;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace AllVanity.Patches;
 
-internal class Managed
+internal static class Managed
 {
     [HarmonyPatch(typeof(PersistentInventoryManager), nameof(PersistentInventoryManager.CommitPendingTransactions))]
-    internal static class PersistentInventoryManager_CommitPendingTransactions_Patch
+    internal static class PersistentInventoryManager__CommitPendingTransactions__Patch
     {
         [HarmonyPriority(Priority.HigherThanNormal)]
         public static bool Prefix()
         {
-            if (PersistentInventoryManager.m_dirty)
-            {
-                SetupVanityInventory();
-                PersistentInventoryManager.m_dirty = false;
-                return false;
-            }
-            return true;
+            if (!PersistentInventoryManager.m_dirty)
+                return true;
+            
+            SetupVanityInventory();
+            PersistentInventoryManager.m_dirty = false;
+            return false;
         }
     }
 
     /*[HarmonyPatch(typeof(PersistentInventoryManager), nameof(PersistentInventoryManager.TouchVanityItem))]
-    internal static class PersistentInventoryManager_TouchVanityItem_Patch
+    internal static class PersistentInventoryManager__TouchVanityItem__Patch
     {
         public static bool Prefix(uint vanityItemId)
         {
@@ -43,7 +43,7 @@ internal class Managed
         PersistentInventoryManager.Current.m_vanityItemsInventory.UpdateItems(CreateVanityPlayerData());
     }
 
-    internal static VanityItemPlayerData CreateVanityPlayerData()
+    private static VanityItemPlayerData CreateVanityPlayerData()
     {
         // if (Plugin.simpleProgressionLoaded)
         //     return SimpleProgressionInterop.GetVanityPlayerData();
@@ -52,7 +52,7 @@ internal class Managed
 
         var validBlocks = new List<VanityItemsTemplateDataBlock>();
 
-        foreach (VanityItemsTemplateDataBlock block in allBlocks)
+        foreach (var block in allBlocks)
         {
             if (!Unlock.IsAllowedToUnlock(block))
                 continue;
@@ -62,12 +62,12 @@ internal class Managed
             
         var vanity = new VanityItemPlayerData(ClassInjector.DerivedConstructorPointer<VanityItemPlayerData>());
 
-        var vanityArray = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DropServer.VanityItems.VanityItem>(validBlocks.Count);
+        var vanityArray = new Il2CppReferenceArray<DropServer.VanityItems.VanityItem>(validBlocks.Count);
 
         var c = 0;
         foreach (var block in validBlocks)
         {
-            DropServer.VanityItems.VanityItem item = new DropServer.VanityItems.VanityItem(ClassInjector.DerivedConstructorPointer<DropServer.VanityItems.VanityItem>())
+            var item = new DropServer.VanityItems.VanityItem(ClassInjector.DerivedConstructorPointer<DropServer.VanityItems.VanityItem>())
             {
                 Flags = InventoryItemFlags.Touched | InventoryItemFlags.Acknowledged,
                 ItemId = block.persistentID,
@@ -81,5 +81,4 @@ internal class Managed
 
         return vanity;
     }
-
 }

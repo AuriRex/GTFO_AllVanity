@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace AllVanity.Patches;
 
-internal class Native
+internal static class Native
 {
     public static unsafe void* GetIl2CppMethod<T>(string methodName, string returnTypeName, bool isGeneric, params string[] argTypes) where T : Il2CppObjectBase
     {
@@ -20,6 +20,7 @@ internal class Native
         return *ppMethod;
     }
 
+    // ReSharper disable once CollectionNeverQueried.Local
     private static readonly List<INativeDetour> _detours = new();
     internal static unsafe void ApplyNative()
     {
@@ -32,20 +33,20 @@ internal class Native
 
     public static unsafe void UpdateItemsPatch(IntPtr self, IntPtr vanityItemPlayerData, Il2CppMethodInfo* methodInfo)
     {
-        VanityItemInventory __instance = new VanityItemInventory(self);
+        var __instance = new VanityItemInventory(self);
 
         _originalUpdateItems.Invoke(self, vanityItemPlayerData, methodInfo);
 
-        var backedIds = new List<uint>();
+        var backendIDs = new List<uint>();
 
         if (__instance.m_backednItems == null)
         {
             __instance.m_backednItems = new Il2CppSystem.Collections.Generic.List<VanityItem>(0);
         }
 
-        foreach (VanityItem item in __instance.m_backednItems)
+        foreach (var item in __instance.m_backednItems)
         {
-            backedIds.Add(item.id);
+            backendIDs.Add(item.id);
         }
 
         foreach (VanityItemsTemplateDataBlock block in GameDataBlockBase<VanityItemsTemplateDataBlock>.GetAllBlocks())
@@ -53,13 +54,13 @@ internal class Native
             if (block == null)
                 continue;
 
-            if (backedIds.Contains(block.persistentID))
+            if (backendIDs.Contains(block.persistentID))
                 continue;
 
             if (!Unlock.IsAllowedToUnlock(block))
                 continue;
 
-            VanityItem item = new VanityItem(ClassInjector.DerivedConstructorPointer<VanityItem>());
+            var item = new VanityItem(ClassInjector.DerivedConstructorPointer<VanityItem>());
             item.publicName = $"<#{Plugin.hexColorUnlocked}>{block.publicName}</color>";
             item.type = block.type;
             item.prefab = block.prefab;
